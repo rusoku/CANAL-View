@@ -20,7 +20,7 @@ CANAL View Qt GUI for TouCAN series USB to CAN bus converter
 	For example init string will looks like 0;12345678;1000
 
 	For non standard CAN bus speeds: speed parameter must be == 0
-	For example 1000 Mbit speed init string will looks like: 0;12345678;0;7;2;2;5
+	For example 1000 kbit speed init string will looks like: 0;12345678;0;7;2;2;5
 	   where: tseg1 = 7, tseg2 = 2, sjw = 2, brp = 5
 	CAN interface clock is : 100MHz
  
