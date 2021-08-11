@@ -23,31 +23,13 @@
 #include <QApplication>
 #include <QDebug>
 
-/*
-RxWorkerThread::RxWorkerThread(int start, int end)
-{
-    m_countStart = start;
-    m_countEnd   = end;
-}
-
-void RxWorkerThread::doWork()
-{
-    for (int i = m_countStart; i <= m_countEnd; i++) {
-        emit updateCount(i);
-        qApp->processEvents();
-        PortableSleep::msleep(1000);
-    }
-    emit finished();    
-}
-*/
 
 //=========================== Infinite Thread ===========================
-RxWorkerThreadInfinite::RxWorkerThreadInfinite(int handler, QList<canalMsg> *canalMSGlist) : m_running(true)
+RxWorkerThreadInfinite::RxWorkerThreadInfinite(int handler) : m_running(true)
 {
     m_drvHandle = handler;
     m_msg = new canalMsg;
     cnt = 0;
-    m_RxcanalMSGlist = canalMSGlist;
 }
 
 void RxWorkerThreadInfinite::stopWork()
@@ -62,36 +44,39 @@ void RxWorkerThreadInfinite::resetRxCounter()
 
 void RxWorkerThreadInfinite::doWork()
 {
-    while (m_running)
+    while(m_running)
     {
-        qApp->processEvents();
+        //PortableSleep::msleep(1);
+        //QThread::msleep(1);
 
-        if(CanalBlockingReceive(m_drvHandle, m_msg , 500) == CANAL_ERROR_SUCCESS)
-        {
+        QCoreApplication::processEvents();
+
+        if(CanalBlockingReceive(m_drvHandle, m_msg , 100) == CANAL_ERROR_SUCCESS)
+        {            
             if(m_running)
-            {
-              emit updateInfiniteCount(++cnt, *m_msg);
+            {               
+             if(++cnt < 10000000) emit updateInfiniteCount(cnt, *m_msg);
             }
         }
     }
-
-    //qDebug() << "RxThread finished!";
     emit finished();
 }
-
 
 //========================= Thread driving =========================
 void MainWindow::startRxThread()
 {
     m_RxWorkerThread = new QThread;
-    m_RxWorker       = new RxWorkerThreadInfinite(m_drvHandle, m_RxMsgList);
+    m_RxWorker       = new RxWorkerThreadInfinite(m_drvHandle);
     m_RxWorker->moveToThread(m_RxWorkerThread);
 
     connect(m_RxWorkerThread, &QThread::started, m_RxWorker, &RxWorkerThreadInfinite::doWork);
     connect(m_RxWorker, &RxWorkerThreadInfinite::finished, m_RxWorkerThread, &QThread::quit);
-    connect(m_RxWorker, &RxWorkerThreadInfinite::finished,  m_RxWorker, &RxWorkerThreadInfinite::deleteLater);
+    connect(m_RxWorker, &RxWorkerThreadInfinite::finished, m_RxWorker, &RxWorkerThreadInfinite::deleteLater);
     connect(m_RxWorkerThread, &QThread::finished, m_RxWorkerThread, &QThread::deleteLater);
-    connect(m_RxWorker, &RxWorkerThreadInfinite::updateInfiniteCount, this, &MainWindow::updateInfiniteCount);
+
+    //connect(m_RxWorker, &RxWorkerThreadInfinite::updateInfiniteCount, this, &MainWindow::updateInfiniteCountStream); //Qt::BlockingQueuedConnection);
+    connect(m_RxWorker, &RxWorkerThreadInfinite::updateInfiniteCount, m_RxTableModel, &RxFrameTable::updateFrame);
+
     connect(this, &MainWindow::stopRxThreadSignal, m_RxWorker, &RxWorkerThreadInfinite::stopWork);//GS
     connect(this, &MainWindow::resetRxThreadCounter, m_RxWorker, &RxWorkerThreadInfinite::resetRxCounter);//GS
 

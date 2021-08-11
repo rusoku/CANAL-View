@@ -24,49 +24,41 @@
 #include <QDebug>
 
 //=========================== Infinite Thread ===========================
-TxWorkerThreadInfinite::TxWorkerThreadInfinite(int handler, QList<canalMsg> *canalMSGlist) : m_running(true)
+TxWorkerThreadInfinite::TxWorkerThreadInfinite(int handler, QVector<transmitMsg> *canalMSGlist) : m_running(true)
 {
     m_drvHandle = handler;
-    m_msg = new canalMsg;
-    cnt = 0;
+    m_msg = new transmitMsg;
     m_TxcanalMSGlist = canalMSGlist;
     m_MsgCnt = 0;
 }
 
-void TxWorkerThreadInfinite::stopWork()
-{
-    m_running = false;
-}
 
 void TxWorkerThreadInfinite::doWork()
 {
     canalMsg TxMsg;
-    int x, cnt;
-   //unsigned long MsgCnt = 0;
-
-   // qDebug() << "TxThread started!";
+    qint32 count = 0;
+    //qint16 delay;
 
         cnt = m_TxcanalMSGlist->count();
 
-        for(x=0; x < cnt; x++)
+        for(qint32 x=0; x < cnt; x++)
         {
-          TxMsg = m_TxcanalMSGlist->at(x);
-          //qDebug() << "TxcanalMSGlist = " << TxMsg.id;
-          CanalSend(m_drvHandle, &TxMsg);
-          emit updateInfiniteTxCount(++m_MsgCnt);
-          qApp->processEvents();
+          TxMsg = m_TxcanalMSGlist->at(x).msg;
+          count =  m_TxcanalMSGlist->at(x).stat.count;
+
+          if(count > 999)
+                  count = 999;
+
+            for(qint64 z=0; z<count; z++)
+            {
+              CanalSend(m_drvHandle, &TxMsg);
+              emit updateInfiniteTxCount(++m_MsgCnt);
+              QCoreApplication::processEvents();
+            }
+
+          //QCoreApplication::processEvents();
+          //qApp->processEvents();
         }
-
-        //while(!m_TxcanalMSGlist->isEmpty())
-       // {
-              //TxMsg = m_TxcanalMSGlist->takeFirst();
-         //       TxMsg = m_TxcanalMSGlist-
-        //      qDebug() << "TxcanalMSGlist = " << TxMsg.id;
-              //emit frameSent();// GS frame is sent
-       //       qApp->processEvents();
-       // }
-
-    //qDebug() << "TxThread finished!";
     emit finished();
 }
 
@@ -78,61 +70,17 @@ void MainWindow::startTxThread()
     m_TxWorker       = new TxWorkerThreadInfinite(m_drvHandle, m_TxMsgList);
     m_TxWorker->moveToThread(m_TxWorkerThread);
 
+    /*pradeda darba*/
     connect(m_TxWorkerThread, &QThread::started, m_TxWorker, &TxWorkerThreadInfinite::doWork);
+    /* susinaikina abu */
     connect(m_TxWorker, &TxWorkerThreadInfinite::finished, m_TxWorkerThread, &QThread::quit);
-    connect(m_TxWorker, &TxWorkerThreadInfinite::finished,  m_TxWorker, &TxWorkerThreadInfinite::deleteLater);
+    connect(m_TxWorker, &TxWorkerThreadInfinite::finished, m_TxWorker, &TxWorkerThreadInfinite::deleteLater);
     connect(m_TxWorkerThread, &QThread::finished, m_TxWorkerThread, &QThread::deleteLater);
+
+    /* po kiekvieno issiusto Msg signalina atvaizdavimui */
     connect(m_TxWorker, &TxWorkerThreadInfinite::updateInfiniteTxCount, this, &MainWindow::updateInfiniteTxCount); // canal msg is sent
-    connect(this, &MainWindow::stopTxThreadSignal, m_TxWorker, &TxWorkerThreadInfinite::stopWork);//GS
-    connect(this, &MainWindow::resetTxThreadCounter, m_TxWorker, &TxWorkerThreadInfinite::resetTxCounter);//GS // reset TX counter
-
     m_TxWorkerThread->start();
-    infiniteCountRunning = true;
 }
 
-void MainWindow::stopTxThread()
-{
-    emit  stopTxThreadSignal();
-    infiniteCountRunning = false;
-}
 
-void TxWorkerThreadInfinite::resetTxCounter()
-{
-    m_MsgCnt = 0;
-}
 
-/*
-void TxWorkerThreadInfinite::doWork()
-{
-    int cnt;
-    canalMsg TxMsg;
-
-    qDebug() << "TxThread started!";
-
-    while (m_running)
-    {
-        qApp->processEvents();
-        PortableSleep::msleep(500);
-
-        if(!m_TxcanalMSGlist->isEmpty())
-        {
-            cnt = m_TxcanalMSGlist->count();
-            for(int x= 0; x < cnt; x++)
-            {
-              TxMsg = m_TxcanalMSGlist->takeFirst();
-              qDebug() << "TxcanalMSGlist = " << TxMsg.id;
-              //emit frameSent();// GS kai freimas issiustas
-              qApp->processEvents();
-            }
-        }
-        else
-        {
-            //qDebug() << "TxcanalMSGlist tuscias";
-            continue;
-        }
-    }
-
-    qDebug() << "TxThread finished!";
-    emit finished();
-}
-*/

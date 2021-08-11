@@ -26,13 +26,17 @@
 #include <QList>
 #include <QThread>
 #include <QTableWidgetItem>
+#include <QItemSelectionModel>
 #include "canal.h"
 #include "rxworkerthread.h"
 #include "txworkerthread.h"
 #include "dialogabout.h"
 #include "dialoginitstring.h"
+#include "StreamFrameTable.h"
+#include "AnalyzerFrameTable.h"
 
 Q_DECLARE_METATYPE(structCanalMsg)
+
 
 namespace Ui {
 class MainWindow;
@@ -51,16 +55,17 @@ public:
     // run threads
     bool m_bRun;
 
-    // CANAL messages
-    //QList<canalMsg> m_RxMsgList;
-    //QList<canalMsg> m_TxMsgList;
+    //CANAL messages
+    //QVector<canalMsg> *m_RxMsgList;
+    QVector<transmitMsg> *m_TxMsgList;
 
-    QList<canalMsg> *m_RxMsgList;
-    QList<canalMsg> *m_TxMsgList;
-
-    canalMsg m_TxMsg;
-    canalMsg m_RxMsg;
+    //canalMsg m_TxMsg;
+    transmitMsg m_TxMsg;
+    streamMsg m_RxMsg;
     unsigned int m_burst_cnt;
+
+    /* Rx Msg Table */
+    //RxFrameTable *RxTableModel;
 
     //settings
     void saveSettings();
@@ -72,6 +77,9 @@ signals:
 
     void stopTxThreadSignal();
     void resetTxThreadCounter();
+
+private:
+    QVector<streamMsg>* m_RxCanFrames;
 
 private slots:
 
@@ -116,7 +124,8 @@ private slots:
     void statisticsTimerTimeout();
 
     // Rx CANAL Thread
-    void updateInfiniteCount(unsigned long cnt, canalMsg msg);
+    //void updateInfiniteCountStream(qulonglong cnt, canalMsg msg);
+    //void updateInfiniteCountAnalyzer(qulonglong cnt, canalMsg msg);
     // Tx message sent
     void updateInfiniteTxCount(unsigned long cnt);
     //void infiniteCountFinished();
@@ -124,7 +133,6 @@ private slots:
     void stopRxThread(); //GS
 
     void startTxThread();
-    void stopTxThread(); //GS
 
     // Tx CANAL Thread
 
@@ -150,6 +158,24 @@ private slots:
     void on_actionAbout_triggered();
 
     void on_actionInit_string_triggered();
+
+    void StreamTable_scroll_down();
+    //void on_AnalyzerTable_scroll_down();
+
+//    void on_pushButton_2_clicked();
+
+//    void on_pushButton_3_clicked();
+
+    void on_pushButton_2_clicked();
+
+
+    void on_pushButton_3_clicked();
+
+    void on_pushButton_4_clicked();
+
+    void on_le_txcount_editingFinished();
+
+    void on_le_txcount_textChanged(const QString &arg1);
 
 private:
     Ui::MainWindow *ui;
@@ -195,11 +221,17 @@ private:
     int m_rowCountCurrent = 0;
 
     //MsgSend
-    void SendWidgetToTxMsg(canalMsg &TransmitMessageFrame);
+    void SendWidgetToTxMsg(bool insert_type);
 
     DialogAbout *dlgAbout;
     DialogInitString *dlgInitString;
-};
 
+    /*  QtableViewModels */
+    RxFrameTable *m_RxTableModel;
+    AnalyzerFrameTable *AnalyzerTableModel;
+
+    QItemSelectionModel *streamTableSelectionModel;
+    QItemSelectionModel *TxTableSelectionModel;
+};
 
 #endif // MAINWINDOW_H

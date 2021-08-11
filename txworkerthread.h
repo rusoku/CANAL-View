@@ -26,6 +26,7 @@
 #include <QMainWindow>
 #include <QObject>
 #include <QThread>
+#include "messagetypes.h"
 
 
 //======================= RxWorkerThreadInfinite ===================
@@ -34,24 +35,22 @@ class   TxWorkerThreadInfinite : public QObject
     Q_OBJECT
 
 public:
-    explicit TxWorkerThreadInfinite(int handler, QList<canalMsg> *canalMSGlist);
+    explicit TxWorkerThreadInfinite(int handler, QVector<transmitMsg> *canalMSGlist);
 
 public slots:
     void doWork();
-    void stopWork();
-    void resetTxCounter();
 
 signals:
-    void updateInfiniteTxCount(unsigned long);
+    void updateInfiniteTxCount(int);
     void finished();
     void frameSent();
 
 private:
-    canalMsg *m_msg;
+    transmitMsg *m_msg;
     int  m_drvHandle;
     bool m_running;
-    unsigned long cnt, m_MsgCnt;
-    QList<canalMsg> *m_TxcanalMSGlist;
+    int cnt, m_MsgCnt;
+    QVector<transmitMsg> *m_TxcanalMSGlist;
 };
 
 #endif // TXWORKERTHREAD_H

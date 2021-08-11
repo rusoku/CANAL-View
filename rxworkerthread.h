@@ -27,26 +27,6 @@
 #include <QObject>
 #include <QThread>
 
-/*
-class RxWorkerThread : public QObject
-{
-    Q_OBJECT
-
-public:
-    explicit RxWorkerThread(int start, int end);
-
-public slots:
-    void doWork();
-
-signals:    
-    void updateCount(int);
-    void finished();
-
-private:
-    int m_countStart;
-    int m_countEnd;
-};
-*/
 
 //======================= RxWorkerThreadInfinite ===================
 class RxWorkerThreadInfinite : public QObject
@@ -54,7 +34,7 @@ class RxWorkerThreadInfinite : public QObject
     Q_OBJECT
 
 public:
-    explicit RxWorkerThreadInfinite(int handler, QList<canalMsg> *canalMSGlist);
+    explicit RxWorkerThreadInfinite(int handler);
 
 public slots:
     void doWork();
@@ -62,15 +42,14 @@ public slots:
     void resetRxCounter();
 
 signals:
-    void updateInfiniteCount(unsigned long, canalMsg);
+    void updateInfiniteCount(quint32, canalMsg);
     void finished();
 
 private:
     canalMsg *m_msg;
     int  m_drvHandle;
     bool m_running;   
-    unsigned long cnt;
-    QList<canalMsg> *m_RxcanalMSGlist;
+    quint32 cnt;
 };
 
 #endif // RXWORKERTHREAD_H

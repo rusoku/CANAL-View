@@ -13,7 +13,7 @@ TEMPLATE = app
 
 RC_ICONS = icon.ico
 
-VERSION = 1.0.0
+VERSION = 1.0.7
 QMAKE_TARGET_COMPANY = RUSOKU Technologies
 QMAKE_TARGET_PRODUCT = CANAL View
 QMAKE_TARGET_DESCRIPTION = Demo software for CANAL library
@@ -30,11 +30,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-CONFIG += c++11
+#CONFIG += c++11
 #CONFIG += dll
 #CONFIG -= embed_manifest_exe
 
 SOURCES += \
+    AnalyzerFrameTable.cpp \
+    StreamFrameTable.cpp \
     rxworkerthread.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -48,8 +50,11 @@ SOURCES += \
 
 
 HEADERS += \
+    AnalyzerFrameTable.h \
+    StreamFrameTable.h \
     mainwindow.h \
     canal.h \
+    messagetypes.h \
     rxworkerthread.h \
     portablesleep.h \
     canal_a.h \
@@ -61,6 +66,9 @@ FORMS += \
     mainwindow.ui \
     dialogabout.ui \
     dialoginitstring.ui
+
+#DEFINES += QT_NO_CAST_FROM_ASCII \
+#           QT_NO_CAST_TO_ASCII
 
 #INCLUDEPATH += "$$PWD/ucrt"
 #LIBS += -L"$$PWD/Libraries"
@@ -81,4 +89,6 @@ contains(QT_ARCH, i386) {
 
 RESOURCES += \
     resource.qrc
+
+DISTFILES +=
 

@@ -27,62 +27,69 @@
 #include <QThread>
 #include <QDebug>
 #include <QFileDialog>
+#include <QStandardPaths>
+#include <QDateTime>
+#include <QChar>
 
 //void MainWindow::startRxThread()
 
 void MainWindow::exportTableWidgetToCSV()
 {
-    QTableWidget * table = ui->MsgTableWidget;
+    streamMsg  canframe;
+    QString  string;
+    QByteArray data_array;
+   //QChar ch;
 
-    //QFile f( "data.csv" );
-    QString filters("CSV files (*.csv);;All files (*.*)");
-    QString defaultFilter("CSV files (*.csv)");
-    QString fileName = QFileDialog::getSaveFileName(nullptr, "Save file", QCoreApplication::applicationDirPath(),filters, &defaultFilter);
-    QFile f(fileName);
+    //QVector<canalMsg>* RxCanFrames = RxTableModel->m_RxCanFrames;
+    QVector<streamMsg>* RxCanFrames = m_RxTableModel->getStreamDatabasePointer();
 
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Save file"),QStandardPaths::writableLocation((QStandardPaths::DocumentsLocation)), tr("CSV files (*.csv)"));
+    QFile file(fileName);
 
-    if (f.open(QFile::WriteOnly | QFile::Truncate))
+   // QGuiApplication::setOverrideCursor(Qt::WaitCursor);
+    this->setCursor(Qt::WaitCursor);
+
+    //if (f.open(QFile::WriteOnly | QFile::Truncate))
+    if(file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        QTextStream data( &f );
-        //QStringList strList;
+        QTextStream stream(&file);
+        stream <<"TouCAN USB to CAN bus converter raw data log:  " << QDateTime::currentDateTime().toString() << "\n\r";
+        stream << "Nr" <<';'<< "Timestamp"<<";"<< "T h:m:sec.ms" <<';'<<"Type (hex)"<<';'<< "Id (hex)"<<';'<<"Length" << ';' << "Data (hex)" << "\n";
 
-       QGuiApplication::setOverrideCursor(Qt::WaitCursor);
+    for(qint32 x = 0 ; x < RxCanFrames->size(); x++)
+     {
+        canframe = RxCanFrames->at(x);
+        stream << QString("%1").arg(x+1,0,10) << ';' ;
+        stream << QString("%1").arg(canframe.msg.timestamp,0,10) << ';' ;
 
-        // Header
-        for( int c = 0; c < table->columnCount(); ++c )
-        {
-            data << table->horizontalHeaderItem(c)->data(Qt::DisplayRole).toString();
-            if (c != (table->columnCount()-1))
-                                 data << ",";
-        }
-        data << "\n" ;
+        stream << QDateTime::fromMSecsSinceEpoch(canframe.stat.time, Qt::UTC).toString("hh:mm:ss.zzz") << ';' ;
 
-        // Data
-        for( int r = 0; r < table->rowCount(); ++r )
-        {
-            for( int c = 0; c < table->columnCount(); ++c )
-            {
-              if(table->item( r, c ) != nullptr)
-              {
-                data << table->item( r, c )->text();
-              }
-              else
-              {
-                data << "";
-              }
+        if(canframe.msg.flags & CANAL_IDFLAG_EXTENDED)
+            string = "Ext";
+        else
+            string = "Std";
 
-              if (c != (table->columnCount()-1))
-                                     data << ",";
-            }
+        if(canframe.msg.flags & CANAL_IDFLAG_RTR)
+            string.append(":Rtr");
 
-          data << "\n" ;
-        }
-        f.close();
+        if(canframe.msg.flags & CANAL_IDFLAG_STATUS)
+            string = "Status";
+            string.append(';');
 
-       QGuiApplication::setOverrideCursor(Qt::ArrowCursor);
+        stream << string;
+        stream <<  QString("%1").arg(canframe.msg.id,0,16).toUpper() << ';' << QString("%1").arg(canframe.msg.sizeData,0,10).toUpper() << ';'  ;
+
+        data_array = QByteArray::fromRawData((const char*) canframe.msg.data, canframe.msg.sizeData);
+        string = data_array.toHex(' ').toUpper();
+        stream << string << "\n";
+     }
+
     }
+    file.flush();
+    file.close();
+    //QGuiApplication::setOverrideCursor(Qt::ArrowCursor);
+    this->setCursor(Qt::ArrowCursor);
 }
-
 
 void MainWindow::on_actionSave_buffer_triggered()
 {

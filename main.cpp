@@ -22,10 +22,12 @@
 #include "canal.h"
 #include <QApplication>
 #include <QDebug>
+#include <QStyleFactory>
 
 int main(int argc, char *argv[])
 {       
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    //QApplication::setStyle(QStyleFactory::create("Fusion"));
     qRegisterMetaType<canalMsg>("canalMsg");
 
 //    QApplication::addLibraryPath(a.applicationDirPath() + "dll");
@@ -38,8 +40,9 @@ int main(int argc, char *argv[])
 
 
 
-    QApplication a(argc, argv);
-    a.setWindowIcon(QIcon(":/resources/img/Rusoku_Icon.png"));
+    QApplication app(argc, argv);
+    app.setWindowIcon(QIcon(":/resources/img/Rusoku_Icon.png"));    
+    app.setStyle("fusion");
 
     //QApplication::addLibraryPath(a.applicationDirPath() + "/dll/");
     //qDebug() << a.applicationDirPath() + "/dll/";
@@ -50,5 +53,5 @@ int main(int argc, char *argv[])
     MainWindow w(0);
     w.show();
 
-    return a.exec();
+    return app.exec();
 }

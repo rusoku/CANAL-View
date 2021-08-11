@@ -20,7 +20,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
-
+#include <QStandardPaths>
 
 void MainWindow::saveSettings()
 {
@@ -56,10 +56,13 @@ void MainWindow::loadSettings()
   //settings->endGroup();
 
 
-  settings = new QSettings("RUSOKU Technologies", "CANAL View", this);
-  //settings = new QSettings("settings.ini", QSettings::IniFormat, this);
+  //settings = new QSettings("RUSOKU Technologies", "CANAL View", this);
+  settings = new QSettings("settings.ini", QSettings::IniFormat, this);
+  //settings = new QSettings();
+  //settings->setPath(QSettings::IniFormat,QSettings::SystemScope,"settings.ini");
+
   //setObjectName(name);
-  setWindowTitle("CANAL view");
+  setWindowTitle("CANAL view v.1.0.7rc2");
 
   settings->beginGroup("OpenFlags");
   ui->cb_SilentMode->setChecked(settings->value("Silent",false).toBool());
@@ -72,6 +75,6 @@ void MainWindow::loadSettings()
   ui->cb_TxFifoPriority->setChecked(settings->value("TxFifoMode",false).toBool());
   ui->cb_WakeUpMode->setChecked(settings->value("WakeUp",false).toBool());
   ui->cb_TimestampDelay->setChecked(settings->value("TimeDelay",false).toBool());
-  ui->le_OpenParameters->setText(settings->value("OpenString","0;12345678;125").toString());
+  ui->le_OpenParameters->setText(settings->value("OpenString","0;00000000;250").toString());
   settings->endGroup();
 }
