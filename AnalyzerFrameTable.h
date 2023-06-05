@@ -5,7 +5,6 @@
 #include <QTimer>
 #include <QVector>
 #include "canal.h"
-#include "canal_a.h"
 #include "messagetypes.h"
 
 

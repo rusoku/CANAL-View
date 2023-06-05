@@ -21,8 +21,7 @@
 #include "ui_mainwindow.h"
 #include "dialogabout.h"
 #include "canal.h"
-#include "canal_a.h"
-#include "rxworkerthread.h"
+//#include "rxworkerthread.h"
 #include "QValidator"
 #include <QMessageBox>
 #include <QThread>
@@ -66,7 +65,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //timerStatistics = new QTimer;
     //connect(timerStatistics, &QTimer::timeout,this, &MainWindow::statisticsTimerTimeout);
     //connect(RxTableModel, &QAbstractTableModel::dataChanged, AnalyzerTableModel, &AnalyzerFrameTable::on_doAnalyze);
-    //connect(ui->RxMsgTableView->   
+    //connect(ui->RxMsgTableView->
+
 }
 
 MainWindow::~MainWindow()
@@ -736,13 +736,12 @@ void MainWindow::on_pushButton_2_clicked()
     //QGuiApplication::setOverrideCursor(Qt::ArrowCursor);
 }
 
-
 void MainWindow::StreamTable_scroll_down()
 {
     QModelIndex index;
     index.siblingAtRow(m_RxTableModel->getStreamDatabasePointer()->size()-1);
 
-     //QVector<canalMsg> *temp_RxCanFrames = m_RxTableModel->getStreamDatabasePointer();
+    //QVector<canalMsg> *temp_RxCanFrames = m_RxTableModel->getStreamDatabasePointer();
 
     ui->RxMsgTableView->scrollToBottom();
 
@@ -752,4 +751,24 @@ void MainWindow::StreamTable_scroll_down()
 
     //ui->RxMsgTableView->setFocus();
     //ui->RxMsgTableView->selectRow(0);
+}
+
+void MainWindow::on_ListButton_clicked()
+{
+    canal_dev_list  CanDevList;
+    QString deviceListStr;
+    qint8   cnt;
+
+    ui->listDevices->clear();
+
+    if(CANAL_ERROR_SUCCESS == CanalGetDeviceList(&CanDevList,8))
+        cnt = CanDevList.canDevCount;
+    else
+        return;
+
+    for(int x = 0; x < cnt; x++ ){
+        deviceListStr.clear();
+        deviceListStr.append(CanDevList.canDevInfo[x].SerialNumber);
+        ui->listDevices->addItem(deviceListStr);
+    }
 }

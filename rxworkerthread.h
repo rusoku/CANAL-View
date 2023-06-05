@@ -22,7 +22,6 @@
 #define RXWORKERTHREAD_H
 
 #include "canal.h"
-#include "canal_a.h"
 #include <QMainWindow>
 #include <QObject>
 #include <QThread>

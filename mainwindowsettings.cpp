@@ -62,7 +62,7 @@ void MainWindow::loadSettings()
   //settings->setPath(QSettings::IniFormat,QSettings::SystemScope,"settings.ini");
 
   //setObjectName(name);
-  setWindowTitle("CANAL view v.1.0.7rc2");
+  setWindowTitle("CANAL view v.1.0.8");
 
   settings->beginGroup("OpenFlags");
   ui->cb_SilentMode->setChecked(settings->value("Silent",false).toBool());

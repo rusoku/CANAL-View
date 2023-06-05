@@ -177,6 +177,9 @@ private slots:
 
     void on_le_txcount_textChanged(const QString &arg1);
 
+
+    void on_ListButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 

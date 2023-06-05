@@ -13,7 +13,7 @@ TEMPLATE = app
 
 RC_ICONS = icon.ico
 
-VERSION = 1.0.7
+VERSION = 1.0.8
 QMAKE_TARGET_COMPANY = RUSOKU Technologies
 QMAKE_TARGET_PRODUCT = CANAL View
 QMAKE_TARGET_DESCRIPTION = Demo software for CANAL library
@@ -57,7 +57,6 @@ HEADERS += \
     messagetypes.h \
     rxworkerthread.h \
     portablesleep.h \
-    canal_a.h \
     txworkerthread.h \
     dialogabout.h \
     dialoginitstring.h
@@ -71,21 +70,21 @@ FORMS += \
 #           QT_NO_CAST_TO_ASCII
 
 #INCLUDEPATH += "$$PWD/ucrt"
-#LIBS += -L"$$PWD/Libraries"
+LIBS += -L"$$PWD/Libraries"
 
 # Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+#qnx: target.path = /tmp/$${TARGET}/bin
+#else: unix:!android: target.path = /opt/$${TARGET}/bin
+#!isEmpty(target.path): INSTALLS += target
 
-contains(QT_ARCH, i386) {
-    CONFIG(release, debug|release): LIBS += -L$$PWD/Libraries -lcanal32
-    CONFIG(debug, debug|release): LIBS += -L$$PWD/Libraries -lcanal32d
+#contains(QT_ARCH, i386) {
+    CONFIG(release, debug|release): LIBS += -L$$PWD/Libraries -lcanal
+    CONFIG(debug, debug|release): LIBS += -L$$PWD/Libraries -lcanald
 
-} else {
-    CONFIG(release, debug|release): LIBS += -L$$PWD/Libraries -lcanal64
-    CONFIG(debug, debug|release): LIBS += -L$$PWD/Libraries -lcanal64d
-}
+#} else {
+#    CONFIG(release, debug|release): LIBS += -L$$PWD/Libraries -lcanal
+#    CONFIG(debug, debug|release): LIBS += -L$$PWD/Libraries -lcanal
+#}
 
 RESOURCES += \
     resource.qrc

@@ -20,8 +20,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "canal.h"
-#include "canal_a.h"
-#include "rxworkerthread.h"
+//#include "rxworkerthread.h"
 #include "QValidator"
 #include <QMessageBox>
 #include <QThread>
@@ -240,6 +239,15 @@ void MainWindow::WidgetValuesInit()
     str = QString("%1.%2.%3").arg(temp_u32 & 0xFF).arg((temp_u32>>8) & 0xFF).arg(temp_u32>>16 & 0xFF);
     ui->label_Canal->setText(str);
     temp_u32 = CanalGetDllVersion();
+
+    unsigned char   maj = temp_u32 & 0xff;
+    unsigned char   min = (temp_u32>>8) & 0xff;
+    unsigned char   patch = (temp_u32 >>16) & 0xff;
+
+    if(( maj < 1) || (min < 0) || (patch < 5)){
+        QMessageBox::critical(this,"Error","Wrong CANAL DLL version, 1.0.5 or later");
+    }
+
     str = QString("%1.%2.%3").arg(temp_u32 & 0xFF).arg((temp_u32>>8) & 0xFF).arg(temp_u32>>16 & 0xFF);
     ui->label_CanalDll->setText(str);
 

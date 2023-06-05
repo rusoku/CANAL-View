@@ -20,7 +20,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "canal.h"
-#include "canal_a.h"
 #include "rxworkerthread.h"
 #include "QValidator"
 #include <QMessageBox>

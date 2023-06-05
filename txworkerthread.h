@@ -21,7 +21,6 @@
 #define TXWORKERTHREAD_H
 
 #include "canal.h"
-#include "canal_a.h"
 #include "portablesleep.h"
 #include <QMainWindow>
 #include <QObject>

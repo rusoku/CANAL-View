@@ -30,22 +30,9 @@ int main(int argc, char *argv[])
     //QApplication::setStyle(QStyleFactory::create("Fusion"));
     qRegisterMetaType<canalMsg>("canalMsg");
 
-//    QApplication::addLibraryPath(a.applicationDirPath() + "dll");
-//    QStringList paths = QCoreApplication::libraryPaths();
-//    paths.append(".");
-//    paths.append("imageformats");
-//    paths.append("platforms");
-//    paths.append("dll");
-//    QCoreApplication::setLibraryPaths(paths);
-
-
-
     QApplication app(argc, argv);
     app.setWindowIcon(QIcon(":/resources/img/Rusoku_Icon.png"));    
     app.setStyle("fusion");
-
-    //QApplication::addLibraryPath(a.applicationDirPath() + "/dll/");
-    //qDebug() << a.applicationDirPath() + "/dll/";
 
     QApplication::setOrganizationDomain("RUSOKU Technologies");
     QApplication::setApplicationName("CANAL View");

@@ -3,7 +3,6 @@
 
 #include <QtGlobal>
 #include "canal.h"
-#include "canal_a.h"
 
 enum
 {
